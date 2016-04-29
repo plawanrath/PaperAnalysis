@@ -1,0 +1,43 @@
+The entire query processing system is designed in a robust manner using Spark SQL.
+
+The architecture is organized as such:
+
+Since the input files come from KDD challange, the file names need not change, so that are all assigned to variables in InputFiles.scala file.
+All Schemas are pre-set for the various files in Schemas.scala.
+
+Now to create a query, we simply need to form the query as a string and call teh Schema creation function for the appropriate table from the Schemas.scala object, register the table to the schema data frame and run the query into the same in sqlContext. Then we can manipulate the results as we see fit. 
+
+All the query files have comments showing how to run.
+
+** Please note that since this maven project needs to be built with dependencies, the jar file becomes quite large so I have deleted the target folder. To run the project you will need to build the maven project to get a jar.
+
+**SInce the dataset is too large(98GB) it is very difficult to create a sample small enough to be uploaded while maintaining all the properties of all the tables. I personally worked on a sample of 2GB. So if you need to see a running demo of the code, I would be happy to personally show them with my 2GB of sample data that I used to build the system.
+
+
+Some example runs :
+
+spark-submit --class PapersOfAuthor --master local PaperAnalysis-1.0-SNAPSHOT-jar-with-dependencies.jar hdfs://localhost:9000/user/plawan hdfs://localhost:9000/user/plawan/PapersOfA "alain dufour"
+
+Total number of Papers Published by alain dufour = 1
+
+Plawans-MacBook-Pro:Desktop plawanrath$ hdfs dfs -cat hdfs://localhost:9000/user/plawan/PapersOfA/part-00000
+16/04/29 03:54:32 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[Proceedings of the 2013 International Workshop on Programming Models and Applications for Multicores and Manycores]
+
+
+Plawans-MacBook-Pro:Desktop plawanrath$ spark-submit --class PaperContainingKeywords --master local PaperAnalysis-1.0-SNAPSHOT-jar-with-dependencies.jar hdfs://localhost:9000/user/plawan hdfs://localhost:9000/user/plawan/PapersOnKeyPKW water
+
+Total Number of Papers matching the Keyword water = 2
+
+Plawans-MacBook-Pro:Desktop plawanrath$ hdfs dfs -cat hdfs://localhost:9000/user/plawan/PapersOnKeyPKW/part-00000
+16/04/29 03:56:34 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[Casa De Los Camellos, Gran Canaria - Dawson Travel]
+[Performance of Phase Change Materials in a Horizontal Annulus of a Double-Pipe Heat Exchanger in a Water-Circulating Loop]
+
+
+Plawans-MacBook-Pro:Desktop plawanrath$ spark-submit --class KDDSelectedPaperConferences --master local PaperAnalysis-1.0-SNAPSHOT-jar-with-dependencies.jar hdfs://localhost:9000/user/plawan hdfs://localhost:9000/user/plawan/selectedPapersF FSE
+
+Total number of Papers in KDD Selected Paper Sample = 3677
+Total Number of Papers that were selected for KDD and Published in FSE = 252
+
+
